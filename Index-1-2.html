@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sedentarismo</title>
+  <style>
+    :root {
+      --roxo: #8b5cf6;
+      --roxo-claro: #a78bfa;
+      --cinza: #a1a1aa;
+      --card: #0a0a0f;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #000;
+      color: #fff;
+      font-family: sans-serif;
+      min-height: 100vh;
+      border: 3px solid var(--roxo);
+      box-shadow: inset 0 0 25px var(--roxo);
+    }
+
+    button {
+      font-family: inherit;
+      color: inherit;
+      background: none;
+      border: none;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .tela {
+      display: none;
+      min-height: calc(100vh - 6px);
+      padding: 16px 18px 32px;
+    }
+
+    .tela.ativa {
+      display: block;
+    }
+
+    h1.titulo {
+      text-align: center;
+      color: var(--roxo-claro);
+      font-size: 28px;
+      margin: 8px 0 24px;
+    }
+
+    p.texto {
+      color: #e4e4e7;
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .voltar {
+      display: block;
+      padding: 4px 0;
+      margin-bottom: 8px;
+    }
+
+    /* ---------- Início ---------- */
+    .topo {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .perfil {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .foto {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 2px solid var(--roxo);
+      box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
+      background: var(--roxo);
+      object-fit: cover;
+      object-position: 50% 25%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: 700;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .papel {
+      font-size: 20px;
+    }
+
+    .pontinhos {
+      font-size: 30px;
+      line-height: 1;
+      padding: 6px 4px;
+      letter-spacing: 2px;
+    }
+
+    .nome-card {
+      display: none;
+      margin: 8px 0 4px;
+      padding: 12px 16px;
+      background: var(--card);
+      border: 2px solid var(--roxo);
+      border-radius: 12px;
+      box-shadow: 0 0 14px rgba(139, 92, 246, 0.4);
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .nome-card.aberto {
+      display: block;
+    }
+
+    .nome-card small {
+      display: block;
+      color: var(--cinza);
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    .abas {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px 22px;
+      margin: 22px 0 26px;
+    }
+
+    .abas button {
+      color: var(--roxo);
+      font-size: 18px;
+      font-weight: 700;
+      padding: 8px 2px;
+    }
+
+    /* ---------- Avaliações ---------- */
+    .btn-pilula {
+      display: block;
+      margin: 0 auto;
+      padding: 14px 26px;
+      background: var(--roxo);
+      color: #fff;
+      font-size: 18px;
+      font-weight: 700;
+      border-radius: 999px;
+    }
+
+    .btn-pilula:active {
+      transform: scale(0.97);
+    }
+
+    .pergunta {
+      margin-bottom: 18px;
+    }
+
+    .pergunta label {
+      display: block;
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    select,
+    input[type="number"],
+    input.campo {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--card);
+      color: #fff;
+      font-size: 16px;
+      border: 1px solid #3f3f46;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    select {
+      -webkit-appearance: none;
+      appearance: none;
+      padding-right: 44px;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+    }
+
+    select:focus,
+    input:focus {
+      border-color: var(--roxo);
+      box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
+    }
+
+    .erro {
+      min-height: 20px;
+      margin: 4px 0 12px;
+      color: #f87171;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .caixa {
+      border: 3px solid var(--roxo);
+      padding: 24px 18px;
+      margin-top: 24px;
+      text-align: center;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .caixa .grande {
+      font-size: 24px;
+    }
+
+    .caixa .grande b {
+      color: var(--roxo-claro);
+    }
+
+    .aviso {
+      color: var(--cinza);
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    /* ---------- Resultados ---------- */
+    .bloco h2 {
+      color: var(--roxo);
+      font-size: 30px;
+      margin: 26px 0 14px;
+    }
+
+    .bola {
+      min-width: 80px;
+      height: 80px;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--roxo);
+      border-radius: 40px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    /* ---------- Sugestões ---------- */
+    .lista-sug p {
+      color: var(--roxo-claro);
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      line-height: 1.4;
+    }
+
+    .rodape {
+      color: var(--roxo-claro);
+      font-size: 16px;
+      line-height: 1.6;
+      margin-top: 60px;
+      text-align: center;
+    }
+
+    /* ---------- Configurações ---------- */
+    .menu {
+      margin-top: 16px;
+      border: 3px solid var(--roxo);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .menu .item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 26px 18px;
+      font-size: 22px;
+      font-weight: 700;
+      text-align: left;
+      text-decoration: none;
+      color: #fff;
+      border-bottom: 3px solid var(--roxo);
+    }
+
+    .menu .item:last-child {
+      border-bottom: none;
+    }
+
+    /* ---------- Relógio ---------- */
+    .relogio {
+      margin-top: 90px;
+      text-align: center;
+    }
+
+    #hora {
+      font-size: 56px;
+      font-weight: 700;
+      color: var(--roxo-claro);
+      letter-spacing: 2px;
+      text-shadow: 0 0 18px rgba(139, 92, 246, 0.7);
+    }
+
+    #data {
+      margin-top: 14px;
+      color: var(--cinza);
+      font-size: 18px;
+    }
+
+    .frase {
+      margin-top: 48px;
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 0 16px rgba(139, 92, 246, 0.8);
+    }
+
+    /* ---------- Avatares ---------- */
+    .av {
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid var(--roxo);
+      background: #000;
+    }
+
+    .av svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .grade-av {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 16px 0 22px;
+    }
+
+    .av-opcao {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      padding: 3px;
+      border: 3px solid transparent;
+      border-radius: 50%;
+    }
+
+    .av-opcao .av {
+      width: 100%;
+      height: 100%;
+    }
+
+    .av-opcao.sel {
+      border-color: #fff;
+      box-shadow: 0 0 14px var(--roxo);
+    }
+
+    .rotulo {
+      display: block;
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .ok {
+      min-height: 20px;
+      margin-top: 12px;
+      color: #4ade80;
+      font-size: 15px;
+      text-align: center;
+    }
+
+
+    /* ---------- Compartilhamento ---------- */
+    .compartilhar { margin: 26px 0 10px; text-align: center; }
+    .btn-compartilhar {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 13px 24px; border: 1px solid var(--roxo-claro); border-radius: 999px;
+      background: var(--roxo); color: #fff; font-size: 17px; font-weight: 700;
+    }
+    .btn-compartilhar:active { transform: scale(.97); }
+    .opcoes-compartilhar {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; margin-top: 14px;
+    }
+    .opcoes-compartilhar[hidden] { display: none; }
+    .rede { display: inline-block; padding: 10px 13px; border-radius: 9px; color: #fff;
+      text-decoration: none; font-size: 14px; font-weight: 700; border: 1px solid #ffffff30; }
+    .facebook { background: #1877f2; }
+    .whatsapp { background: #128c7e; }
+    .instagram { background: #a02a91; }
+    .tiktok { background: #171717; }
+
+    /* ---------- Ranking ---------- */
+    .status-rank {
+      padding: 16px;
+      background: var(--card);
+      border: 2px solid var(--roxo);
+      border-radius: 12px;
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+
+    .status-rank p {
+      margin-bottom: 10px;
+    }
+
+    .status-rank p:last-child {
+      margin-bottom: 0;
+    }
+
+    .barra {
+      height: 10px;
+      background: #27272a;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .barra div {
+      height: 100%;
+      background: var(--roxo);
+    }
+
+    .linha {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-bottom: 1px solid #27272a;
+    }
+
+    .linha.voce {
+      background: rgba(139, 92, 246, 0.18);
+      border: 1px solid var(--roxo);
+      border-radius: 10px;
+    }
+
+    .linha .pos {
+      width: 46px;
+      font-weight: 700;
+      color: var(--roxo-claro);
+      font-size: 16px;
+    }
+
+    .linha .nome {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 16px;
+    }
+
+    .linha .pts {
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    /* ---------- Dúvidas (chat) ---------- */
+    #msgs {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-bottom: 8px;
+    }
+
+    .msg {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .msg.bot {
+      align-self: flex-start;
+      background: var(--card);
+      border: 1px solid var(--roxo);
+    }
+
+    .msg.eu {
+      align-self: flex-end;
+      background: var(--roxo);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0;
+    }
+
+    .chips button {
+      padding: 8px 12px;
+      border: 1px solid var(--roxo);
+      border-radius: 999px;
+      color: var(--roxo-claro);
+      font-size: 14px;
+    }
+
+    .envio {
+      position: sticky;
+      bottom: 0;
+      display: flex;
+      gap: 8px;
+      padding: 10px 0;
+      background: #000;
+    }
+
+    .envio input {
+      flex: 1;
+      padding: 13px;
+      background: var(--card);
+      color: #fff;
+      font-size: 16px;
+      border: 1px solid #3f3f46;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    .envio button {
+      padding: 0 18px;
+      background: var(--roxo);
+      border-radius: 10px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============ INÍCIO ============ -->
+  <section class="tela ativa" id="tela-home">
+    <header class="topo">
+      <div class="perfil">
+        <!-- Coloque sua foto na mesma pasta com o nome foto.jpg -->
+        <img class="foto" id="fotoPerfil" src="Screenshot_20261026_215931_Gallery.jpg" alt="Foto de perfil"
+             onclick="alternarNome()"
+             onerror="this.removeAttribute('src'); this.alt='A'">
+        <span class="papel">desenvolvedor</span>
+      </div>
+      <button class="pontinhos" onclick="ir('config')" aria-label="Configurações">&middot;&middot;&middot;</button>
+    </header>
+
+    <div class="nome-card" id="nomeCard">
+      Alessandro Gomes Santos
+      <small>desenvolvedor do site</small>
+    </div>
+
+    <nav class="abas">
+      <button onclick="ir('avaliacoes')">avaliações</button>
+      <button onclick="ir('resultados')">resultados</button>
+      <button onclick="ir('sugestoes')">sugestões</button>
+    </nav>
+
+    <p class="texto">
+      O sedentarismo nas escolas de tempo integral é um problema que pode afetar a saúde e o bem-estar dos estudantes. A falta de atividades físicas durante o dia aumenta o risco de obesidade, problemas cardiovasculares, dores musculares e dificuldades de concentração. Além disso, passar muitas horas sentado pode prejudicar a disposição, o desenvolvimento físico e a saúde mental dos alunos. Por isso, é importante que as escolas reconheçam essas ameaças e incentivem hábitos mais saudáveis.
+    </p>
+    <p class="texto">
+      Para combater o sedentarismo nas escolas de tempo integral, é necessário adotar medidas que incentivem o movimento e a participação dos estudantes. A escola pode promover aulas de educação física mais dinâmicas, pausas ativas entre as aulas, jogos esportivos, dança e atividades recreativas. Também é importante conscientizar os alunos sobre os benefícios da prática regular de exercícios físicos e oferecer espaços adequados para essas atividades. Dessa forma, a escola contribui para uma rotina mais saudável, ativa e equilibrada.
+    </p>
+    <div class="compartilhar">
+      <button class="btn-compartilhar" onclick="alternarCompartilhamento()" aria-label="Compartilhar site" aria-expanded="false" id="btnCompartilhar">
+        <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.7 6.6-4.4M8.7 13.3l6.6 4.4"/></svg>
+        Compartilhar
+      </button>
+      <div class="opcoes-compartilhar" id="opcoesCompartilhar" hidden>
+        <a class="rede facebook" href="#" onclick="compartilharFacebook(event)">Facebook</a>
+        <a class="rede whatsapp" href="#" onclick="compartilharWhatsApp(event)">WhatsApp</a>
+        <a class="rede instagram" href="#" onclick="compartilharInstagram(event)">Instagram</a>
+        <a class="rede tiktok" href="#" onclick="compartilharTikTok(event)">TikTok</a>
+      </div>
+      <p class="aviso" id="avisoCompartilhar" aria-live="polite" style="margin-top:8px"></p>
+    </div>
+  </section>
+
+  <!-- ============ AVALIAÇÕES (introdução) ============ -->
+  <section class="tela" id="tela-avaliacoes">
+    <button class="voltar" onclick="voltar()" aria-label="Voltar">
+      <svg width="48" height="40" viewBox="0 0 48 40"><path d="M2 20 L20 3 L20 13 L46 13 L46 27 L20 27 L20 37 Z" fill="#8b5cf6"/></svg>
+    </button>
+    <h1 class="titulo" style="margin-top:90px">Avaliações</h1>
+    <p class="texto">Para avaliar seu progresso e suas estatísticas, precisamos que nos informe suas características de saúde.</p>
+    <button class="btn-pilula" style="margin-top:200px" onclick="ir('quiz')">Começar</button>
+  </section>
+
+  <!-- ============ AVALIAÇÃO (perguntas) ============ -->
+  <section class="tela" id="tela-quiz">
+    <button class="voltar" onclick="voltar()" aria-label="Voltar">
+      <svg width="48" height="40" viewBox="0 0 48 40"><path d="M2 20 L20 3 L20 13 L46 13 L46 27 L20 27 L20 37 Z" fill="#8b5cf6"/></svg>
+    </button>
+    <h1 class="titulo">Avaliação</h1>
+    <div id="perguntas"></div>
+    <p class="erro" id="erroQuiz"></p>
+    <button class="btn-pilula" onclick="enviarAvaliacao()">Enviar</button>
+  </section>
+
+  <!-- ============ AVALIAÇÃO FEITA ============ -->
+  <section class="tela" id="tela-avalok">
+    <button class="voltar" onclick="voltar()" aria-label="Voltar">
+      <svg width="48" height="40" viewBox="0 0 48 40"><path d="M2 20 L20 3 L20 13 L46 13 L46 27 L20 27 L20 37 Z" fill="#8b5cf6"/></svg>
+    </button>
+    <div class="caixa">
+      <p>Sua avaliação foi feita com sucesso</p>
+      <p class="grande">Suas estatísticas são de <b id="pctFinal">0%</b></p>
+      <p id="msgFinal" class="texto" style="margin:0"></p>
+    </div>
+    <p class="aviso">Esta avaliação é educativa e não substitui uma consulta com um profissional de saúde.</p>
+  </section>
+
+  <!-- ============ RESULTADOS ============ -->
+  <section class="tela" id="tela-resultados">
+    <button class="voltar" onclick="voltar()" aria-label="Voltar">
+      <svg width="48" height="40" viewBox="0 0 48 40"><path d="M2 20 L20 3 L20 13 L46 13 L46 27 L20 27 L20 37 Z" fill="#8b5cf6"/></svg>
+    </button>
+    <h1 class="titulo">Resultados</h1>
+    <div class="bloco">
+      <h2>Pontos</h2>
+      <span class="bola" id="rPontos">0</span>
+      <h2>Estatísticas</h2>
+      <span class="bola" id="rEstat">—</span>
+      <h2>Dias alcançados</h2>
+      <span class="bola" id="rDias">0</span>
+    </div>
+    <p class="aviso" style="text-align:left;margin-top:28px">
+      Você ganha 1 ponto por dia ao entrar no site e mais 2 pontos a cada 4 dias de acesso.
+    </p>
+  </section>
+
+  <!-- ============ SUGESTÕES ============ -->
+  <section class="tela" id="tela-sugestoes">
+    <button class="voltar" onclick="voltar()" aria-label="Voltar">
+      <svg width="48" height="40" viewBox="0 0 48 40"><path d="M2 20 L20 3 L20 13 L46 13 L46 27 L20 27 L20 37 Z" fill="#8b5cf6"/></svg>
+    </button>
+    <h1 class="titulo">Sugestões</h1>
+    <div class="lista-sug" style="margin-top:60px">
+      <p>1 - Leitura de livros: 40 min</p>
+      <p>2 - Atividades físicas: 20 min</p>
+      <p>3 - Boa alimentação</p>
+      <p>4 - 9 horas de sono por dia</p>
+    </div>
+    <p class="rodape">Após realizar os objetivos, entre no site para marcar seu login diário e receber pontos nos resultados.</p>
+  </section>
+
+  <!-- ============ MEU PERFIL ============ -->
+  <section class="tela" id="tela-perfil">
+    <button class="voltar" onclick="voltar()" aria-label="Voltar">
+      <svg width="48" height="40" viewBox="0 0 48 40"><path d="M2 20 L20 3 L20 13 L46 13 L46 27 L20 27 L20 37 Z" fill="#8b5cf6"/></svg>
+    </button>
+    <h1 class="titulo">Meu perfil</h1>
+    <div class="av" id="previewAv" style="width:104px;height:104px;margin:0 auto 18px"></div>
+    <label class="rotulo" for="apelido">Apelido</label>
+    <input class="campo" type="text" id="apelido" maxlength="16" placeholder="Como você quer aparecer" autocomplete="off">
+    <span class="rotulo" style="margin-top:20px">Escolha seu avatar</span>
+    <div class="grade-av" id="gradeAv"></div>
+    <button class="btn-pilula" onclick="salvarPerfil()">Salvar perfil</button>
+    <p class="ok" id="okPerfil"></p>
+  </section>
+
+  <!-- ============ CONFIGURAÇÕES ============ -->
+  <section class="tela" id="tela-config">
+    <button class="voltar" onclick="voltar()" aria-label="Voltar">
+      <svg width="48" height="40" viewBox="0 0 48 40"><path d="M2 20 L20 3 L20 13 L46 13 L46 27 L20 27 L20 37 Z" fill="#8b5cf6"/></svg>
+    </button>
+    <div class="menu">
+      <button class="item" onclick="ir('perfil')">Meu perfil</button>
+      <a class="item" id="linkSuporte" href="#" target="_blank" rel="noopener">
+        Suporte
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>
+      </a>
+      <button class="item" onclick="ir('duvidas')">Dúvidas</button>
+      <button class="item" onclick="ir('info')">Informações</button>
+      <button class="item" onclick="ir('relogio')">Relógio</button>
+    </div>
+  </section>
+
+  <!-- ============ DÚVIDAS (assistente) ============ -->
+  <section class="tela" id="tela-duvidas">
+    <button class="voltar" onclick="voltar()" aria-label="Voltar">
+      <svg width="48" height="40" viewBox="0 0 48 40"><path d="M2 20 L20 3 L20 13 L46 13 L46 27 L20 27 L20 37 Z" fill="#8b5cf6"/></svg>
+    </button>
+    <h1 class="titulo" style="margin-bottom:16px">Dúvidas</h1>
+    <div id="msgs"></div>
+    <div class="chips">
+      <button onclick="perguntarRapido('O que é sedentarismo?')">O que é sedentarismo?</button>
+      <button onclick="perguntarRapido('Como ganho pontos?')">Como ganho pontos?</button>
+      <button onclick="perguntarRapido('Como funciona a avaliação?')">Como funciona a avaliação?</button>
+      <button onclick="perguntarRapido('Quanto tempo de tela é demais?')">Tempo de tela</button>
+    </div>
+    <form class="envio" onsubmit="enviarMsg(event)">
+      <input type="text" id="campoMsg" placeholder="Digite sua dúvida..." autocomplete="off">
+      <button type="submit">Enviar</button>
+    </form>
+  </section>
+
+  <!-- ============ INFORMAÇÕES ============ -->
+  <section class="tela" id="tela-info">
+    <button class="voltar" onclick="voltar()" aria-label="Voltar">
+      <svg width="48" height="40" viewBox="0 0 48 40"><path d="M2 20 L20 3 L20 13 L46 13 L46 27 L20 27 L20 37 Z" fill="#8b5cf6"/></svg>
+    </button>
+    <h1 class="titulo">Informações</h1>
+    <p class="texto">O sedentarismo é um problema que visamos diminuir nas escolas de tempo integral.</p>
+    <p class="texto">Sedentarismo é passar a maior parte do dia sentado ou parado, com pouca atividade física. Aqui você faz avaliações sobre seus hábitos, acompanha suas estatísticas, ganha pontos por entrar todos os dias e recebe sugestões para ter uma rotina mais ativa e saudável.</p>
+    <p class="texto">Site criado por <b>Alessandro Gomes Santos</b>.</p>
+  </section>
+
+  <!-- ============ RELÓGIO ============ -->
+  <section class="tela" id="tela-relogio">
+    <button class="voltar" onclick="voltar()" aria-label="Voltar">
+      <svg width="48" height="40" viewBox="0 0 48 40"><path d="M2 20 L20 3 L20 13 L46 13 L46 27 L20 27 L20 37 Z" fill="#8b5cf6"/></svg>
+    </button>
+    <div class="relogio">
+      <div id="hora">--:--:--</div>
+      <div id="data"></div>
+      <p class="frase">Não durma tarde</p>
+    </div>
+  </section>
+
+  <script>
+    // ================= CONFIGURAÇÃO =================
+    // Número do WhatsApp do suporte (com 55 do Brasil + DDD + número, só dígitos)
+    var WHATSAPP = '559991594212';
+
+    // Ranking
+    var MIN_RANKING = 100;   // pontos para entrar no ranking
+    var TAM_RANKING = 200;   // quantas pessoas aparecem
+    var RANKING_DEMO = true; // true = outros participantes de exemplo (sem servidor)
+
+    // ================= ARMAZENAMENTO SEGURO =================
+    var memoria = {};
+
+    function ler(chave) {
+      try {
+        var v = localStorage.getItem(chave);
+        return v ? JSON.parse(v) : null;
+      } catch (e) {
+        return memoria[chave] || null;
+      }
+    }
+
+    function salvar(chave, valor) {
+      memoria[chave] = valor;
+      try {
+        localStorage.setItem(chave, JSON.stringify(valor));
+      } catch (e) {}
+    }
+
+    function el(id) {
+      return document.getElementById(id);
+    }
+
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    // ================= NAVEGAÇÃO =================
+    var pilha = ['home'];
+
+    function mostrar(nome) {
+      var telas = document.querySelectorAll('.tela');
+      for (var i = 0; i < telas.length; i++) {
+        telas[i].classList.remove('ativa');
+      }
+      el('tela-' + nome).classList.add('ativa');
+      window.scrollTo(0, 0);
+      if (nome === 'resultados') atualizarResultados();
+      if (nome === 'relogio') atualizarRelogio();
+      if (nome === 'ranking') renderRanking();
+      if (nome === 'perfil') renderPerfil();
+    }
+
+    function ir(nome) {
+      pilha.push(nome);
+      mostrar(nome);
+    }
+
+    function voltar() {
+      if (pilha.length > 1) pilha.pop();
+      mostrar(pilha[pilha.length - 1]);
+    }
+
+    function alternarNome() {
+      el('nomeCard').classList.toggle('aberto');
+    }
+
+    // ================= LOGIN DIÁRIO E PONTOS =================
+    function hojeChave() {
+      var d = new Date();
+      var m = ('0' + (d.getMonth() + 1)).slice(-2);
+      var dia = ('0' + d.getDate()).slice(-2);
+      return d.getFullYear() + '-' + m + '-' + dia;
+    }
+
+    function registrarLogin() {
+      var dias = ler('dias') || [];
+      var hoje = hojeChave();
+      if (dias.indexOf(hoje) === -1) {
+        dias.push(hoje);
+        salvar('dias', dias);
+      }
+    }
+
+    // 1 ponto por dia + 2 pontos extras a cada 4 dias
+    function calcularPontos(totalDias) {
+      return totalDias + Math.floor(totalDias / 4) * 2;
+    }
+
+    function pontosAtuais() {
+      return calcularPontos((ler('dias') || []).length);
+    }
+
+    // Quantos dias de acesso são necessários para chegar a certa pontuação
+    function diasParaPontos(alvo) {
+      var n = 0;
+      while (calcularPontos(n) < alvo) n++;
+      return n;
+    }
+
+    function atualizarResultados() {
+      var dias = (ler('dias') || []).length;
+      var av = ler('avaliacao');
+      el('rPontos').textContent = calcularPontos(dias);
+      el('rDias').textContent = dias;
+      el('rEstat').textContent = av ? av.pct + '%' : '—';
+    }
+
+    // ================= AVATARES (desenhados em SVG) =================
+    var PELES = ['#fde0c5', '#f5c9a3', '#e5a984', '#c98a5e', '#a8693f', '#8a5030', '#6b3a22', '#4a2917'];
+
+    var AVATARES = [
+      { t: 'p', fundo: '#7c3aed', pele: 0, cabelo: '#2b1b12', estilo: 'curto',    roupa: '#a78bfa', extra: 'nenhum' },
+      { t: 'p', fundo: '#0ea5e9', pele: 1, cabelo: '#6b3f1d', estilo: 'longo',    roupa: '#0369a1', extra: 'oculos' },
+      { t: 'p', fundo: '#f97316', pele: 3, cabelo: '#111111', estilo: 'cacheado', roupa: '#7c2d12', extra: 'fone' },
+      { t: 'p', fundo: '#10b981', pele: 2, cabelo: '#1f1f1f', estilo: 'coque',    roupa: '#065f46', extra: 'nenhum' },
+      { t: 'p', fundo: '#ec4899', pele: 5, cabelo: '#0f0f0f', estilo: 'cacheado', roupa: '#9d174d', extra: 'faixa' },
+      { t: 'p', fundo: '#6366f1', pele: 0, cabelo: '#e5c07b', estilo: 'franja',   roupa: '#312e81', extra: 'oculos' },
+      { t: 'p', fundo: '#14b8a6', pele: 6, cabelo: '#0b0b0b', estilo: 'careca',   roupa: '#115e59', extra: 'medalha' },
+      { t: 'p', fundo: '#eab308', pele: 4, cabelo: '#3b2a1a', estilo: 'rabo',     roupa: '#854d0e', extra: 'bone' },
+      { t: 'p', fundo: '#ef4444', pele: 1, cabelo: '#b45309', estilo: 'moicano',  roupa: '#7f1d1d', extra: 'nenhum' },
+      { t: 'p', fundo: '#8b5cf6', pele: 7, cabelo: '#0a0a0a', estilo: 'curto',    roupa: '#4c1d95', extra: 'fone' },
+      { t: 'p', fundo: '#22c55e', pele: 2, cabelo: '#7c2d12', estilo: 'longo',    roupa: '#14532d', extra: 'medalha' },
+      { t: 'p', fundo: '#3b82f6', pele: 3, cabelo: '#1c1917', estilo: 'franja',   roupa: '#1e3a8a', extra: 'bone' },
+      { t: 'p', fundo: '#f43f5e', pele: 0, cabelo: '#111827', estilo: 'coque',    roupa: '#9f1239', extra: 'oculos' },
+      { t: 'p', fundo: '#a855f7', pele: 5, cabelo: '#1f2937', estilo: 'rabo',     roupa: '#6b21a8', extra: 'faixa' },
+      { t: 'p', fundo: '#06b6d4', pele: 4, cabelo: '#0c0a09', estilo: 'careca',   roupa: '#155e75', extra: 'oculos' },
+      { t: 'p', fundo: '#84cc16', pele: 6, cabelo: '#0a0a0a', estilo: 'cacheado', roupa: '#3f6212', extra: 'nenhum' },
+      { t: 'b', bicho: 'gato',    fundo: '#7c3aed' },
+      { t: 'b', bicho: 'raposa',  fundo: '#0ea5e9' },
+      { t: 'b', bicho: 'coruja',  fundo: '#10b981' },
+      { t: 'b', bicho: 'robo',    fundo: '#f97316' }
+    ];
+
+    function svgPessoa(a) {
+      var pele = PELES[a.pele];
+      var c = a.cabelo;
+      var s = '<rect width="100" height="100" fill="' + a.fundo + '"/>';
+      s += '<circle cx="82" cy="18" r="22" fill="#ffffff22"/>';
+
+      // cabelo que fica atrás da cabeça
+      if (a.estilo === 'longo') {
+        s += '<path d="M26 50 C20 18 80 18 74 50 L78 86 L64 86 L64 52 L36 52 L36 86 L22 86 Z" fill="' + c + '"/>';
+      }
+      if (a.estilo === 'rabo') {
+        s += '<ellipse cx="76" cy="52" rx="7" ry="16" fill="' + c + '" transform="rotate(-18 76 52)"/>';
+      }
+
+      // corpo e pescoço
+      s += '<path d="M10 100 C10 76 30 68 50 68 C70 68 90 76 90 100 Z" fill="' + a.roupa + '"/>';
+      s += '<rect x="43" y="56" width="14" height="16" rx="5" fill="' + pele + '"/>';
+      s += '<rect x="43" y="64" width="14" height="6" fill="#00000026"/>';
+
+      // orelhas e rosto
+      s += '<circle cx="30" cy="46" r="4" fill="' + pele + '"/><circle cx="70" cy="46" r="4" fill="' + pele + '"/>';
+      s += '<ellipse cx="50" cy="44" rx="20" ry="23" fill="' + pele + '"/>';
+
+      // cabelo da frente
+      if (a.estilo === 'curto' || a.estilo === 'longo' || a.estilo === 'rabo' || a.estilo === 'coque') {
+        s += '<path d="M29 44 C26 18 74 18 71 44 C67 33 58 29 50 29 C42 29 33 33 29 44 Z" fill="' + c + '"/>';
+      }
+      if (a.estilo === 'coque') {
+        s += '<circle cx="50" cy="17" r="8" fill="' + c + '"/>';
+      }
+      if (a.estilo === 'cacheado') {
+        s += '<circle cx="32" cy="36" r="9" fill="' + c + '"/><circle cx="41" cy="27" r="9" fill="' + c + '"/>';
+        s += '<circle cx="50" cy="24" r="9" fill="' + c + '"/><circle cx="59" cy="27" r="9" fill="' + c + '"/>';
+        s += '<circle cx="68" cy="36" r="9" fill="' + c + '"/>';
+      }
+      if (a.estilo === 'franja') {
+        s += '<path d="M29 46 C24 16 76 14 71 42 C66 30 48 26 36 38 C33 41 31 43 29 46 Z" fill="' + c + '"/>';
+      }
+      if (a.estilo === 'moicano') {
+        s += '<path d="M44 12 L56 12 L58 32 L42 32 Z" fill="' + c + '"/>';
+      }
+      if (a.estilo === 'careca') {
+        s += '<ellipse cx="44" cy="28" rx="6" ry="3" fill="#ffffff44"/>';
+      }
+
+      // olhos, bochechas e boca
+      s += '<circle cx="42" cy="46" r="2.6" fill="#1b1b26"/><circle cx="58" cy="46" r="2.6" fill="#1b1b26"/>';
+      s += '<circle cx="37" cy="53" r="3" fill="#ff7a7a33"/><circle cx="63" cy="53" r="3" fill="#ff7a7a33"/>';
+      s += '<path d="M43 55 Q50 61 57 55" stroke="#7a3b2e" stroke-width="2.2" fill="none" stroke-linecap="round"/>';
+
+      // acessórios
+      if (a.extra === 'oculos') {
+        s += '<circle cx="42" cy="46" r="7" fill="none" stroke="#111" stroke-width="2"/>';
+        s += '<circle cx="58" cy="46" r="7" fill="none" stroke="#111" stroke-width="2"/>';
+        s += '<path d="M49 46 H51" stroke="#111" stroke-width="2"/>';
+      }
+      if (a.extra === 'fone') {
+        s += '<path d="M27 46 C27 12 73 12 73 46" fill="none" stroke="#1f2937" stroke-width="4"/>';
+        s += '<rect x="23" y="42" width="8" height="16" rx="4" fill="#1f2937"/>';
+        s += '<rect x="69" y="42" width="8" height="16" rx="4" fill="#1f2937"/>';
+      }
+      if (a.extra === 'bone') {
+        s += '<path d="M28 38 C30 14 70 14 72 38 Z" fill="#fafafa"/>';
+        s += '<path d="M48 36 L84 38 L82 43 L48 42 Z" fill="#8b5cf6"/>';
+      }
+      if (a.extra === 'faixa') {
+        s += '<rect x="29" y="32" width="42" height="6" rx="3" fill="#fafafa"/>';
+      }
+      if (a.extra === 'medalha') {
+        s += '<path d="M44 70 L50 84 L56 70" fill="none" stroke="#fbbf24" stroke-width="3"/>';
+        s += '<circle cx="50" cy="90" r="6" fill="#fbbf24"/><circle cx="50" cy="90" r="3" fill="#f59e0b"/>';
+      }
+      return s;
+    }
+
+    function svgBicho(a) {
+      var s = '<rect width="100" height="100" fill="' + a.fundo + '"/>';
+      s += '<circle cx="82" cy="18" r="22" fill="#ffffff22"/>';
+
+      if (a.bicho === 'gato') {
+        s += '<path d="M27 46 L29 18 L46 33 Z" fill="#f59e0b"/><path d="M73 46 L71 18 L54 33 Z" fill="#f59e0b"/>';
+        s += '<path d="M31 40 L32 25 L41 33 Z" fill="#fda4af"/><path d="M69 40 L68 25 L59 33 Z" fill="#fda4af"/>';
+        s += '<ellipse cx="50" cy="56" rx="27" ry="24" fill="#f59e0b"/>';
+        s += '<path d="M50 33 V42 M42 35 L44 43 M58 35 L56 43" stroke="#b45309" stroke-width="3" stroke-linecap="round"/>';
+        s += '<ellipse cx="40" cy="54" rx="3.5" ry="4.5" fill="#1b1b26"/><ellipse cx="60" cy="54" rx="3.5" ry="4.5" fill="#1b1b26"/>';
+        s += '<circle cx="41" cy="52.5" r="1.2" fill="#fff"/><circle cx="61" cy="52.5" r="1.2" fill="#fff"/>';
+        s += '<path d="M46 62 L54 62 L50 67 Z" fill="#fb7185"/>';
+        s += '<path d="M50 67 V70 M50 70 Q45 74 41 71 M50 70 Q55 74 59 71" stroke="#7c2d12" stroke-width="1.8" fill="none" stroke-linecap="round"/>';
+        s += '<path d="M22 62 L36 64 M22 69 L36 67 M78 62 L64 64 M78 69 L64 67" stroke="#fff7ed" stroke-width="1.5" stroke-linecap="round"/>';
+        s += '<path d="M12 100 C12 84 30 80 50 80 C70 80 88 84 88 100 Z" fill="#f59e0b"/>';
+      }
+
+      if (a.bicho === 'raposa') {
+        s += '<path d="M26 44 L28 16 L46 32 Z" fill="#f97316"/><path d="M74 44 L72 16 L54 32 Z" fill="#f97316"/>';
+        s += '<path d="M30 38 L31 24 L40 31 Z" fill="#431407"/><path d="M70 38 L69 24 L60 31 Z" fill="#431407"/>';
+        s += '<path d="M22 46 C22 30 78 30 78 46 C78 62 62 78 50 84 C38 78 22 62 22 46 Z" fill="#f97316"/>';
+        s += '<path d="M22 50 C30 56 42 64 50 84 C36 78 24 64 22 50 Z" fill="#fff7ed"/>';
+        s += '<path d="M78 50 C70 56 58 64 50 84 C64 78 76 64 78 50 Z" fill="#fff7ed"/>';
+        s += '<circle cx="40" cy="50" r="3" fill="#1b1b26"/><circle cx="60" cy="50" r="3" fill="#1b1b26"/>';
+        s += '<circle cx="50" cy="80" r="4" fill="#1b1b26"/>';
+        s += '<path d="M12 100 C12 88 30 88 50 88 C70 88 88 88 88 100 Z" fill="#c2410c"/>';
+      }
+
+      if (a.bicho === 'coruja') {
+        s += '<path d="M24 38 L28 14 L44 28 Z" fill="#78350f"/><path d="M76 38 L72 14 L56 28 Z" fill="#78350f"/>';
+        s += '<ellipse cx="50" cy="60" rx="30" ry="32" fill="#a16207"/>';
+        s += '<ellipse cx="50" cy="76" rx="18" ry="18" fill="#fde68a"/>';
+        s += '<circle cx="38" cy="50" r="12" fill="#fff"/><circle cx="62" cy="50" r="12" fill="#fff"/>';
+        s += '<circle cx="38" cy="50" r="6" fill="#1b1b26"/><circle cx="62" cy="50" r="6" fill="#1b1b26"/>';
+        s += '<circle cx="40" cy="48" r="2" fill="#fff"/><circle cx="64" cy="48" r="2" fill="#fff"/>';
+        s += '<path d="M45 58 L55 58 L50 68 Z" fill="#f59e0b"/>';
+      }
+
+      if (a.bicho === 'robo') {
+        s += '<rect x="48" y="8" width="4" height="14" fill="#e5e7eb"/><circle cx="50" cy="8" r="4" fill="#ef4444"/>';
+        s += '<rect x="16" y="40" width="7" height="18" rx="3" fill="#6b7280"/><rect x="77" y="40" width="7" height="18" rx="3" fill="#6b7280"/>';
+        s += '<rect x="22" y="22" width="56" height="52" rx="12" fill="#9ca3af"/>';
+        s += '<rect x="26" y="26" width="48" height="44" rx="9" fill="#d1d5db"/>';
+        s += '<rect x="33" y="38" width="13" height="13" rx="3" fill="#06b6d4"/><rect x="54" y="38" width="13" height="13" rx="3" fill="#06b6d4"/>';
+        s += '<rect x="38" y="58" width="24" height="7" rx="3" fill="#4b5563"/>';
+        s += '<path d="M44 58 V65 M50 58 V65 M56 58 V65" stroke="#d1d5db" stroke-width="1.5"/>';
+        s += '<rect x="34" y="76" width="32" height="14" rx="4" fill="#6b7280"/>';
+      }
+      return s;
+    }
+
+    function svgAvatar(i) {
+      var a = AVATARES[i] || AVATARES[0];
+      var miolo = a.t === 'p' ? svgPessoa(a) : svgBicho(a);
+      return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' + miolo + '</svg>';
+    }
+
+    // ================= MEU PERFIL =================
+    var avatarSel = 0;
+
+    function atualizarPreview() {
+      el('previewAv').innerHTML = svgAvatar(avatarSel);
+    }
+
+    function renderPerfil() {
+      var p = ler('perfil') || { apelido: '', avatar: 0 };
+      avatarSel = p.avatar || 0;
+      el('apelido').value = p.apelido || '';
+      el('okPerfil').textContent = '';
+
+      var html = '';
+      for (var i = 0; i < AVATARES.length; i++) {
+        html += '<button type="button" class="av-opcao' + (i === avatarSel ? ' sel' : '') +
+                '" onclick="escolherAvatar(' + i + ')" aria-label="Avatar ' + (i + 1) + '">' +
+                '<div class="av">' + svgAvatar(i) + '</div></button>';
+      }
+      el('gradeAv').innerHTML = html;
+      atualizarPreview();
+    }
+
+    function escolherAvatar(i) {
+      avatarSel = i;
+      var botoes = document.querySelectorAll('.av-opcao');
+      for (var k = 0; k < botoes.length; k++) {
+        botoes[k].classList.toggle('sel', k === i);
+      }
+      atualizarPreview();
+    }
+
+    function salvarPerfil() {
+      var apelido = el('apelido').value.trim().slice(0, 16);
+      salvar('perfil', { apelido: apelido, avatar: avatarSel });
+      el('okPerfil').textContent = 'Perfil salvo!';
+    }
+
+    // ================= RANKING =================
+    function aleatorio(semente) {
+      return function () {
+        semente = (semente + 0x6D2B79F5) | 0;
+        var t = Math.imul(semente ^ (semente >>> 15), 1 | semente);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    var NOMES_EXEMPLO = ['Rápido', 'Forte', 'Ativo', 'Veloz', 'Corredor', 'Atleta', 'Ninja', 'Tigre',
+      'Falcão', 'Lobo', 'Trovão', 'Flecha', 'Campeão', 'Guerreiro', 'Saltador', 'Foguete',
+      'Leão', 'Águia', 'Pantera', 'Vulcão'];
+
+    // Participantes de exemplo (fictícios) para mostrar como o ranking fica
+    function participantesExemplo() {
+      var rnd = aleatorio(2026);
+      var lista = [];
+      for (var i = 0; i < TAM_RANKING; i++) {
+        var nome = NOMES_EXEMPLO[Math.floor(rnd() * NOMES_EXEMPLO.length)] + (10 + Math.floor(rnd() * 90));
+        var pts = MIN_RANKING + Math.floor(Math.pow(rnd(), 2.2) * 1300);
+        lista.push({ nome: nome, pontos: pts, avatar: Math.floor(rnd() * AVATARES.length), voce: false });
+      }
+      return lista;
+    }
+
+    function montarRanking() {
+      var lista = RANKING_DEMO ? participantesExemplo() : [];
+      var pontos = pontosAtuais();
+      var perfil = ler('perfil') || {};
+      if (pontos >= MIN_RANKING) {
+        lista.push({ nome: perfil.apelido || 'Você', pontos: pontos, avatar: perfil.avatar || 0, voce: true });
+      }
+      lista.sort(function (a, b) {
+        if (b.pontos !== a.pontos) return b.pontos - a.pontos;
+        if (a.voce !== b.voce) return a.voce ? 1 : -1;
+        return a.nome < b.nome ? -1 : 1;
+      });
+      return lista;
+    }
+
+    function renderRanking() {
+      var pontos = pontosAtuais();
+      var lista = montarRanking();
+      var status;
+
+      if (pontos < MIN_RANKING) {
+        var falta = MIN_RANKING - pontos;
+        var pct = Math.round((pontos / MIN_RANKING) * 100);
+        var diasFalta = diasParaPontos(MIN_RANKING) - (ler('dias') || []).length;
+        status = '<p>Você tem <b>' + pontos + '</b> pontos. Faltam <b>' + falta +
+                 '</b> para entrar no ranking (cerca de ' + diasFalta + ' dias de acesso).</p>' +
+                 '<div class="barra"><div style="width:' + pct + '%"></div></div>';
+      } else {
+        var pos = 0;
+        for (var k = 0; k < lista.length; k++) {
+          if (lista[k].voce) { pos = k + 1; break; }
+        }
+        status = '<p>Você está na posição <b>#' + pos + '</b> com <b>' + pontos + '</b> pontos.</p>';
+      }
+      el('statusRanking').innerHTML = status;
+
+      var medalhas = ['🥇', '🥈', '🥉'];
+      var topo = lista.slice(0, TAM_RANKING);
+      var html = '';
+      for (var i = 0; i < topo.length; i++) {
+        var p = topo[i];
+        var posTxt = i < 3 ? medalhas[i] : '#' + (i + 1);
+        html += '<div class="linha' + (p.voce ? ' voce' : '') + '">' +
+                '<span class="pos">' + posTxt + '</span>' +
+                '<div class="av" style="width:38px;height:38px;flex:none">' + svgAvatar(p.avatar) + '</div>' +
+                '<span class="nome">' + esc(p.nome) + (p.voce ? ' (você)' : '') + '</span>' +
+                '<span class="pts">' + p.pontos + '</span></div>';
+      }
+      el('listaRanking').innerHTML = html;
+
+      el('avisoDemo').textContent = RANKING_DEMO
+        ? 'Ranking de demonstração: os outros participantes são exemplos fictícios, pois ainda não há servidor para reunir pessoas reais.'
+        : '';
+    }
+
+    // ================= AVALIAÇÃO =================
+    var horas = [];
+    for (var h = 6; h <= 24; h++) {
+      horas.push({
+        valor: h,
+        rotulo: ('0' + (h % 24)).slice(-2) + ':00'
+      });
+    }
+
+    var SIM_NAO = [
+      { valor: 'sim', rotulo: 'Sim' },
+      { valor: 'nao', rotulo: 'Não' }
+    ];
+
+    var PERGUNTAS = [
+      { id: 'dormeTarde', texto: 'Você costuma dormir tarde?', opcoes: SIM_NAO,
+        bom: function (v) { return v === 'nao'; } },
+      { id: 'horario', texto: 'Em que horário você costuma dormir?', opcoes: horas, depende: 'dormeTarde',
+        bom: function (v) { return Number(v) <= 22; } },
+      { id: 'esforco', texto: 'Você se esforça para fazer atividades físicas?', opcoes: SIM_NAO,
+        bom: function (v) { return v === 'sim'; } },
+      { id: 'dormeEscola', texto: 'Você costuma dormir na escola?', opcoes: SIM_NAO,
+        bom: function (v) { return v === 'nao'; } },
+      { id: 'celular', texto: 'Você passa muito tempo no celular?', opcoes: SIM_NAO,
+        bom: function (v) { return v === 'nao'; } },
+      { id: 'tela', texto: 'Qual é o seu tempo de tela por dia?',
+        opcoes: [{ valor: '3', rotulo: '3 horas' }, { valor: '9', rotulo: '9 horas' }],
+        bom: function (v) { return v === '3'; } },
+      { id: 'cansaco', texto: 'Você sente cansaço ou falta de disposição?', opcoes: SIM_NAO,
+        bom: function (v) { return v === 'nao'; } },
+      { id: 'espacos', texto: 'Sua escola oferece espaços adequados para atividades físicas?', opcoes: SIM_NAO,
+        bom: function (v) { return v === 'sim'; } },
+      { id: 'deveres', texto: 'Você deixa de fazer os seus deveres?', opcoes: SIM_NAO,
+        bom: function (v) { return v === 'nao'; } },
+      { id: 'humor', texto: 'Você notou mudança de humor nos últimos tempos?', opcoes: SIM_NAO,
+        bom: function (v) { return v === 'nao'; } }
+    ];
+
+    function montarPerguntas() {
+      var html = '';
+      PERGUNTAS.forEach(function (p) {
+        var estilo = p.depende ? ' style="display:none"' : '';
+        html += '<div class="pergunta" id="q-' + p.id + '"' + estilo + '>';
+        html += '<label for="s-' + p.id + '">' + p.texto + '</label>';
+        html += '<select id="s-' + p.id + '" onchange="aoMudar()">';
+        html += '<option value="">Selecione</option>';
+        p.opcoes.forEach(function (o) {
+          html += '<option value="' + o.valor + '">' + o.rotulo + '</option>';
+        });
+        html += '</select></div>';
+      });
+      html += '<div class="pergunta"><label for="s-peso">Qual é o seu peso (kg)?</label>';
+      html += '<input type="number" id="s-peso" inputmode="decimal" min="20" max="300" placeholder="Ex.: 55"></div>';
+      el('perguntas').innerHTML = html;
+    }
+
+    function aoMudar() {
+      // A pergunta do horário só aparece se a pessoa dorme tarde
+      el('q-horario').style.display = el('s-dormeTarde').value === 'sim' ? 'block' : 'none';
+    }
+
+    function enviarAvaliacao() {
+      var respostas = {};
+      var faltou = false;
+
+      PERGUNTAS.forEach(function (p) {
+        var visivel = !p.depende || el('s-' + p.depende).value === 'sim';
+        if (!visivel) return;
+        var v = el('s-' + p.id).value;
+        if (v === '') {
+          faltou = true;
+        } else {
+          respostas[p.id] = v;
+        }
+      });
+
+      var peso = parseFloat(el('s-peso').value);
+      if (faltou || isNaN(peso) || peso < 20 || peso > 300) {
+        el('erroQuiz').textContent = 'Responda todas as perguntas e informe um peso válido.';
+        return;
+      }
+      el('erroQuiz').textContent = '';
+
+      var total = 0;
+      var certas = 0;
+      PERGUNTAS.forEach(function (p) {
+        if (respostas[p.id] === undefined) return;
+        total++;
+        if (p.bom(respostas[p.id])) certas++;
+      });
+      var pct = Math.round((certas / total) * 100);
+
+      salvar('avaliacao', { pct: pct, data: hojeChave(), peso: peso });
+
+      var msg;
+      if (pct >= 75) {
+        msg = 'Ótimo! Você tem bons hábitos. Continue assim!';
+      } else if (pct >= 50) {
+        msg = 'Você está no caminho, mas dá para melhorar. Veja as sugestões.';
+      } else {
+        msg = 'Alguns hábitos precisam de atenção. Veja as sugestões e comece aos poucos.';
+      }
+      if (respostas.humor === 'sim') {
+        msg += ' Se as mudanças de humor estão te incomodando, converse com alguém de confiança ou com um profissional de saúde.';
+      }
+
+      el('pctFinal').textContent = pct + '%';
+      el('msgFinal').textContent = msg;
+
+      // Troca a tela de perguntas pela de resultado
+      pilha.pop();
+      ir('avalok');
+    }
+
+    // ================= RELÓGIO =================
+    function atualizarRelogio() {
+      var d = new Date();
+      var hh = ('0' + d.getHours()).slice(-2);
+      var mm = ('0' + d.getMinutes()).slice(-2);
+      var ss = ('0' + d.getSeconds()).slice(-2);
+      el('hora').textContent = hh + ':' + mm + ':' + ss;
+      try {
+        el('data').textContent = d.toLocaleDateString('pt-BR', {
+          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+        });
+      } catch (e) {
+        el('data').textContent = d.toLocaleDateString();
+      }
+    }
+
+    setInterval(function () {
+      if (el('tela-relogio').classList.contains('ativa')) atualizarRelogio();
+    }, 1000);
+
+    // ================= ASSISTENTE (DÚVIDAS) =================
+    var RESPOSTAS = [
+      { chaves: ['suicid', 'me matar', 'morrer', 'me machucar', 'nao quero viver'],
+        texto: 'Sinto muito que você esteja sofrendo. Você não está sozinho(a). Converse agora com um adulto de confiança e, no Brasil, ligue para o CVV no 188 (24 horas, gratuito).' },
+      { chaves: ['triste', 'ansios', 'deprim', 'estress', 'humor'],
+        texto: 'Mudanças de humor são comuns, mas se estiverem fortes ou durarem muito tempo, converse com alguém de confiança e procure um profissional de saúde. Atividade física e um bom sono também ajudam no bem-estar.' },
+      { chaves: ['ranking', 'classificacao', 'posicao'],
+        texto: 'O ranking mostra as 200 pessoas com mais pontos. Para entrar, você precisa de pelo menos 100 pontos. Veja a sua posição na aba ranking.' },
+      { chaves: ['avatar', 'perfil', 'apelido', 'foto de perfil'],
+        texto: 'Toque nos três pontinhos e abra Meu perfil para escolher seu avatar e seu apelido.' },
+      { chaves: ['ponto', 'pontuacao', 'pontuação'],
+        texto: 'Você ganha 1 ponto por dia ao entrar no site e mais 2 pontos extras a cada 4 dias de acesso. Com 100 pontos você entra no ranking. Veja o total na aba resultados.' },
+      { chaves: ['avaliac', 'questionario', 'dropdown'],
+        texto: 'Na aba avaliações você responde perguntas sobre seus hábitos (sono, atividade física, tempo de tela e mais). Com as respostas, calculamos suas estatísticas em porcentagem.' },
+      { chaves: ['estatistic', 'resultado', 'porcent'],
+        texto: 'As estatísticas mostram a porcentagem de hábitos saudáveis nas suas respostas. Quanto maior, melhor. Você vê tudo na aba resultados.' },
+      { chaves: ['sugest', 'objetivo', 'meta'],
+        texto: 'As sugestões do site são: 40 minutos de leitura, 20 minutos de atividade física, boa alimentação e 9 horas de sono por dia.' },
+      { chaves: ['sedentar'],
+        texto: 'Sedentarismo é passar a maior parte do dia sentado ou parado, com pouca atividade física. Em escolas de tempo integral o risco é maior, e nosso objetivo é diminuir isso.' },
+      { chaves: ['atividade fisica', 'exercicio', 'treino', 'esporte'],
+        texto: 'Crianças e adolescentes devem se movimentar todos os dias. A OMS recomenda em média 60 minutos por dia de atividade física moderada a intensa. Esportes, dança, brincadeiras e pausas ativas contam!' },
+      { chaves: ['sono', 'dormir', 'dormi'],
+        texto: 'Adolescentes precisam, em geral, de 8 a 10 horas de sono por noite. Dormir tarde e pouco prejudica a concentração e a disposição.' },
+      { chaves: ['celular', 'tela'],
+        texto: 'Muito tempo de tela reduz o tempo de movimento e atrapalha o sono. Faça pausas, evite o celular antes de dormir e troque parte desse tempo por atividade física.' },
+      { chaves: ['cansaco', 'disposicao', 'sem energia'],
+        texto: 'O cansaço pode vir de pouco sono, alimentação e falta de movimento. Se for frequente, converse com um adulto de confiança ou procure um profissional de saúde.' },
+      { chaves: ['aliment', 'comida', 'comer'],
+        texto: 'Uma boa alimentação inclui frutas, legumes, água e menos ultraprocessados e refrigerantes. Ela dá energia para estudar e se movimentar.' },
+      { chaves: ['escola', 'tempo integral'],
+        texto: 'Escolas de tempo integral têm mais horas de aula, por isso é importante ter pausas ativas, educação física dinâmica e espaços adequados para atividades.' },
+      { chaves: ['suporte', 'whatsapp', 'contato', 'ajuda', 'desenvolvedor'],
+        texto: 'Para falar com o desenvolvedor, toque nos três pontinhos no início e abra Suporte (WhatsApp).' },
+      { chaves: ['relogio', 'horas'],
+        texto: 'O relógio fica nos três pontinhos, na opção Relógio.' },
+      { chaves: ['oi', 'ola', 'bom dia', 'boa tarde', 'boa noite', 'e ai'],
+        texto: 'Olá! Pergunte sobre sedentarismo, avaliações, pontos, ranking, sono, tempo de tela ou sugestões.' }
+    ];
+
+    function normalizar(s) {
+      return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    }
+
+    function responder(pergunta) {
+      var t = normalizar(pergunta);
+      for (var i = 0; i < RESPOSTAS.length; i++) {
+        for (var j = 0; j < RESPOSTAS[i].chaves.length; j++) {
+          if (t.indexOf(normalizar(RESPOSTAS[i].chaves[j])) !== -1) {
+            return RESPOSTAS[i].texto;
+          }
+        }
+      }
+      return 'Ainda não sei responder isso. Tente perguntar sobre sedentarismo, avaliações, pontos, ranking, sono, tempo de tela ou sugestões. Se preferir, fale com o desenvolvedor em Suporte.';
+    }
+
+    function addMsg(texto, quem, semRolar) {
+      var div = document.createElement('div');
+      div.className = 'msg ' + quem;
+      div.textContent = texto;
+      el('msgs').appendChild(div);
+      if (!semRolar) window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function perguntarRapido(texto) {
+      addMsg(texto, 'eu');
+      addMsg(responder(texto), 'bot');
+    }
+
+    function enviarMsg(e) {
+      e.preventDefault();
+      var campo = el('campoMsg');
+      var texto = campo.value.trim();
+      if (!texto) return;
+      campo.value = '';
+      perguntarRapido(texto);
+    }
+
+
+    // ================= COMPARTILHAMENTO =================
+    function urlCompartilhamento() { return window.location.href; }
+    function alternarCompartilhamento() {
+      var painel = el('opcoesCompartilhar');
+      var aberto = painel.hidden;
+      painel.hidden = !aberto;
+      el('btnCompartilhar').setAttribute('aria-expanded', String(aberto));
+    }
+    function compartilharFacebook(event) {
+      event.preventDefault();
+      window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(urlCompartilhamento()), '_blank', 'noopener,noreferrer');
+    }
+    function compartilharWhatsApp(event) {
+      event.preventDefault();
+      var texto = 'Conheça este site sobre sedentarismo nas escolas: ' + urlCompartilhamento();
+      window.open('https://wa.me/?text=' + encodeURIComponent(texto), '_blank', 'noopener,noreferrer');
+    }
+    async function copiarLinkCompartilhamento() {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(urlCompartilhamento());
+          el('avisoCompartilhar').textContent = 'Link copiado! Cole-o na publicação.';
+        } else {
+          var campo = document.createElement('textarea');
+          campo.value = urlCompartilhamento();
+          campo.setAttribute('readonly', '');
+          campo.style.position = 'absolute'; campo.style.left = '-9999px';
+          document.body.appendChild(campo); campo.select();
+          var copiou = document.execCommand('copy'); campo.remove();
+          el('avisoCompartilhar').textContent = copiou ? 'Link copiado! Cole-o na publicação.' : 'Copie o endereço do site pelo navegador.';
+        }
+      } catch (e) { el('avisoCompartilhar').textContent = 'Copie o endereço do site pelo navegador.'; }
+    }
+    async function compartilharInstagram(event) {
+      event.preventDefault();
+      await copiarLinkCompartilhamento();
+      window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
+    }
+    async function compartilharTikTok(event) {
+      event.preventDefault();
+      await copiarLinkCompartilhamento();
+      window.open('https://www.tiktok.com/', '_blank', 'noopener,noreferrer');
+    }
+
+    // ================= INÍCIO =================
+    montarPerguntas();
+    registrarLogin();
+    el('linkSuporte').href = 'https://wa.me/' + WHATSAPP;
+    addMsg('Olá! Sou o assistente do site. Tire suas dúvidas sobre sedentarismo, avaliações, pontos e sugestões.', 'bot', true);
+  </script>
+
+</body>
+</html>
